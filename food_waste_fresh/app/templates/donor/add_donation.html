@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Donation | FoodShare</title>
+
+    <!-- Bootstrap & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f4f6f9;
+        }
+        .card {
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+        }
+        .step { display: none; }
+        .step.active { display: block; }
+        .step-title {
+            font-weight: 600;
+            color: #0F9D58;
+            margin-bottom: 20px;
+        }
+        .form-control, .form-select {
+            border-radius: 12px;
+            padding: 12px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container py-4">
+
+    <!-- HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold">
+            <i class="bi bi-plus-circle me-2"></i>Add Food Donation
+        </h4>
+        <a href="/donor/dashboard" class="btn btn-outline-secondary rounded-pill">
+            Back to Dashboard
+        </a>
+    </div>
+
+    <form method="POST" class="card p-4">
+
+        <!-- STEP 1: FOOD DETAILS -->
+        <div class="step active">
+            <h5 class="step-title">🍽 Food Details</h5>
+
+            <input type="text" name="food_title" class="form-control mb-3"
+                   placeholder="Food name (Rice, Dal, Bread…)" required>
+
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label>Food Type</label>
+                    <select name="food_type" class="form-select" required>
+                        <option value="Cooked">Cooked</option>
+                        <option value="Raw">Raw</option>
+                        <option value="Packed">Packed</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label>Category</label>
+                    <select name="food_category" class="form-select">
+                        <option value="Veg">Veg</option>
+                        <option value="Non-Veg">Non-Veg</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label>Quantity (kg)</label>
+                    <input type="number" step="0.1" name="quantity_kg"
+                           class="form-control" required>
+                </div>
+            </div>
+
+            <input type="number" name="servings" class="form-control mt-3"
+                   placeholder="Approx servings (optional)">
+
+            <div class="text-end mt-4">
+                <button type="button" class="btn btn-success" onclick="nextStep()">Next</button>
+            </div>
+        </div>
+
+        <!-- STEP 2: SAFETY & TIME -->
+        <div class="step">
+            <h5 class="step-title">🛡 Food Safety & Time</h5>
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-4">
+                    <label>Packaging Condition</label>
+                    <select name="packaging_condition" class="form-select">
+                        <option>Good</option>
+                        <option>Average</option>
+                        <option>Poor</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label>Temperature</label>
+                    <select name="temperature_condition" class="form-select">
+                        <option>Hot</option>
+                        <option>Warm</option>
+                        <option>Cold</option>
+                    </select>
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="hygiene_checked" checked>
+                        <label class="form-check-label">
+                            Prepared hygienically
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label>Prepared Time</label>
+                    <input type="datetime-local" id="prepared_time" name="prepared_time" class="form-control" required>
+                </div>
+                <div class="col-md-6">
+                    <label>Expiry Time</label>
+                    <input type="datetime-local" id="expiry_time" name="expiry_time" class="form-control" required>
+                </div>
+            </div>
+
+            <label>Urgency</label>
+            <select name="urgency" class="form-select">
+                <option>Normal</option>
+                <option>High</option>
+                <option>Immediate</option>
+            </select>
+
+            <div class="d-flex justify-content-between mt-4">
+                <button type="button" class="btn btn-outline-secondary" onclick="prevStep()">Back</button>
+                <button type="button" class="btn btn-success" onclick="nextStep()">Next</button>
+            </div>
+        </div>
+
+        <!-- STEP 3: PICKUP LOCATION -->
+        <div class="step">
+            <h5 class="step-title">📍 Pickup Location</h5>
+
+            <textarea name="pickup_address" class="form-control mb-3"
+                      rows="3" placeholder="Complete pickup address" required></textarea>
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-4">
+                    <select name="state" id="state" class="form-select" onchange="updateCities()" required>
+                        <option value="">Select State</option>
+                        <option>Maharashtra</option>
+                        <option>Karnataka</option>
+                        <option>Delhi</option>
+                        <option>Tamil Nadu</option>
+                        <option>Telangana</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <select name="city" id="city" class="form-select" required>
+                        <option value="">Select City</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <input type="text" name="pincode" class="form-control"
+                           placeholder="Pincode" required>
+                </div>
+            </div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label>Pickup Start Time</label>
+                    <input type="datetime-local" id="pickup_start_time" name="pickup_start_time" class="form-control">
+                </div>
+                <div class="col-md-6">
+                    <label>Pickup End Time</label>
+                    <input type="datetime-local" id="pickup_end_time" name="pickup_end_time" class="form-control">
+                </div>
+            </div>
+
+            <div class="row g-3 mb-2">
+                <div class="col-md-6">
+                    <input type="text" id="latitude" name="latitude"
+                           class="form-control" placeholder="Latitude (auto-detected)">
+                </div>
+                <div class="col-md-6">
+                    <input type="text" id="longitude" name="longitude"
+                           class="form-control" placeholder="Longitude (auto-detected)">
+                </div>
+            </div>
+
+            <button type="button"
+                    class="btn btn-outline-success btn-sm rounded-pill"
+                    onclick="getLocation()">
+                <i class="bi bi-geo-alt"></i> Use Current Location
+            </button>
+
+            <div class="d-flex justify-content-between mt-4">
+                <button type="button" class="btn btn-outline-secondary" onclick="prevStep()">Back</button>
+                <button type="button" class="btn btn-success" onclick="nextStep()">Next</button>
+            </div>
+        </div>
+
+        <!-- STEP 4: LOGISTICS & CONTACT -->
+        <div class="step">
+            <h5 class="step-title">🚚 Logistics & Contact</h5>
+
+            <select name="pickup_type" class="form-select mb-3">
+                <option>Easy</option>
+                <option>Vehicle Required</option>
+            </select>
+
+            <input type="text" name="accessibility_notes" class="form-control mb-3"
+                   placeholder="Accessibility notes (stairs, narrow road, etc.)">
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <input type="text" name="contact_name" class="form-control"
+                           placeholder="Contact Person" required>
+                </div>
+                <div class="col-md-6">
+                    <input type="text" name="contact_phone" class="form-control"
+                           placeholder="Phone Number" required>
+                </div>
+            </div>
+
+            <textarea name="special_instructions" class="form-control"
+                      rows="3" placeholder="Additional instructions (optional)"></textarea>
+
+            <div class="d-flex justify-content-between mt-4">
+                <button type="button" class="btn btn-outline-secondary" onclick="prevStep()">Back</button>
+                <button type="submit" class="btn btn-success">
+                    Submit Donation
+                </button>
+            </div>
+        </div>
+
+    </form>
+</div>
+
+<!-- SCRIPTS -->
+<script>
+let currentStep = 0;
+const steps = document.querySelectorAll('.step');
+
+function showStep(i) {
+    steps.forEach((step, idx) => step.classList.toggle('active', idx === i));
+}
+function nextStep() {
+    const currentInputs = steps[currentStep].querySelectorAll("input, select, textarea");
+
+    for (let input of currentInputs) {
+        if (!input.checkValidity()) {
+            input.reportValidity();
+            return;
+        }
+    }
+
+    if (currentStep < steps.length - 1) {
+        currentStep++;
+        showStep(currentStep);
+    }
+}
+function prevStep() {
+    if (currentStep > 0) {
+        currentStep--;
+        showStep(currentStep);
+    }
+}
+
+function getLocation() {
+    if (!navigator.geolocation) {
+        alert("Geolocation not supported.");
+        return;
+    }
+    navigator.geolocation.getCurrentPosition(
+        pos => {
+            document.getElementById("latitude").value = pos.coords.latitude.toFixed(6);
+            document.getElementById("longitude").value = pos.coords.longitude.toFixed(6);
+        },
+        () => alert("Location access denied.")
+    );
+}
+
+const cityData = {
+    "Maharashtra": ["Mumbai", "Pune", "Nagpur","Amravati","Yavatmal","Buldana","Akola"],
+    "Karnataka": ["Bengaluru", "Mysuru"],
+    "Delhi": ["New Delhi"],
+    "Tamil Nadu": ["Chennai", "Coimbatore"],
+    "Telangana": ["Hyderabad", "Warangal"]
+};
+
+function updateCities() {
+    const state = document.getElementById("state").value;
+    const citySelect = document.getElementById("city");
+    citySelect.innerHTML = '<option value="">Select City</option>';
+    if (cityData[state]) {
+        cityData[state].forEach(city => {
+            const opt = document.createElement("option");
+            opt.value = city;
+            opt.textContent = city;
+            citySelect.appendChild(opt);
+        });
+    }
+}
+document.addEventListener("DOMContentLoaded", function () {
+    const preparedInput = document.getElementById("prepared_time");
+    const expiryInput = document.getElementById("expiry_time");
+
+    preparedInput.addEventListener("change", function () {
+        const prepValue = preparedInput.value;
+
+        if (prepValue) {
+            // Lock expiry after preparation
+            expiryInput.min = prepValue;
+
+            // Reset invalid expiry
+            if (expiryInput.value && expiryInput.value < prepValue) {
+                expiryInput.value = "";
+            }
+        }
+    });
+
+    // Extra safety validation
+    expiryInput.addEventListener("change", function () {
+        if (expiryInput.value < preparedInput.value) {
+            alert("Expiry time must be after preparation time");
+            expiryInput.value = "";
+        }
+    });
+    const pickupStart = document.getElementById("pickup_start_time");
+const pickupEnd = document.getElementById("pickup_end_time");
+
+// Pickup Start should be after Prepared Time
+preparedInput.addEventListener("change", function () {
+    if (preparedInput.value) {
+        pickupStart.min = preparedInput.value;
+    }
+});
+
+// Pickup End should be after Pickup Start
+pickupStart.addEventListener("change", function () {
+    if (pickupStart.value) {
+        pickupEnd.min = pickupStart.value;
+
+        if (pickupEnd.value && pickupEnd.value < pickupStart.value) {
+            pickupEnd.value = "";
+        }
+    }
+});
+
+// Extra validation
+pickupEnd.addEventListener("change", function () {
+    if (pickupEnd.value < pickupStart.value) {
+        alert("Pickup end time must be after pickup start time");
+        pickupEnd.value = "";
+    }
+});
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FoodShare | Admin Dashboard</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --sidebar-width: 260px;
+            --primary-glow: #6366f1;
+            --secondary-glow: #14b8a6;
+            --bg-dark: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: #cbd5e1;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* ANIMATED BACKGROUND */
+        .bg-animated {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: radial-gradient(circle at 0% 0%, rgba(99, 102, 241, 0.15), transparent 40%),
+                        radial-gradient(circle at 100% 100%, rgba(20, 184, 166, 0.15), transparent 40%);
+            z-index: -1;
+            animation: pulseBg 10s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulseBg {
+            0% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(1.1); opacity: 1; }
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            position: fixed;
+            top: 0; left: 0;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid var(--border-color);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+        }
+
+        .nav-link {
+            color: #94a3b8;
+            padding: 12px 16px;
+            border-radius: 10px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 500;
+            margin-bottom: 5px;
+            text-decoration: none;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: rgba(99, 102, 241, 0.1);
+            color: #fff;
+        }
+
+        .nav-link.active {
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.2);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 30px;
+        }
+
+        /* GLASS CARDS */
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 24px;
+            height: 100%;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        /* METRICS */
+        .metric-title {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #94a3b8;
+            font-weight: 600;
+        }
+
+        .metric-value {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: white;
+            line-height: 1.1;
+            margin-bottom: 5px;
+        }
+
+        .metric-sub {
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        /* ACTION BUTTONS */
+        .action-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-decoration: none;
+            color: #e2e8f0;
+            transition: 0.2s;
+        }
+
+        .action-card:hover {
+            background: rgba(255,255,255,0.08);
+            border-color: rgba(99, 102, 241, 0.3);
+            color: white;
+        }
+
+        .action-icon {
+            width: 40px; height: 40px;
+            border-radius: 10px;
+            background: rgba(99, 102, 241, 0.2);
+            color: #818cf8;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        /* AVATAR */
+        .avatar {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #6366f1, #8b5cf6);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; color: white;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="bg-animated"></div>
+
+<nav class="sidebar">
+    <div class="mb-5 px-2 d-flex align-items-center gap-2">
+        <div class="avatar"><i class="bi bi-recycle"></i></div>
+        <span class="fs-5 fw-bold text-white" style="font-family: 'Space Grotesk'">FoodShare</span>
+    </div>
+
+    <div class="d-flex flex-column gap-2 flex-grow-1">
+        <a href="/admin/dashboard" class="nav-link active">
+            <i class="bi bi-speedometer2"></i> Dashboard
+        </a>
+        <a href="/admin/users" class="nav-link">
+            <i class="bi bi-people"></i> User Management
+        </a>
+        <a href="/admin/donations" class="nav-link">
+            <i class="bi bi-box-seam"></i> Donations
+        </a>
+        <a href="/admin/prediction" class="nav-link"><i class="bi bi-magic"></i> AI Forecast</a>
+        <a href="/admin/reports" class="nav-link">
+            <i class="bi bi-bar-chart-line"></i> Reports & Analytics
+        </a>
+    </div>
+
+    <div class="mt-auto pt-4 border-top border-white border-opacity-10">
+        <div class="d-flex align-items-center gap-3 px-2">
+            <div class="avatar">AD</div>
+            <div style="line-height: 1.2;">
+                <div class="small fw-bold text-white">Admin User</div>
+                <div style="font-size: 0.75rem; color: #94a3b8;">admin@foodshare.org</div>
+            </div>
+            <a href="/logout" class="ms-auto text-secondary"><i class="bi bi-box-arrow-right"></i></a>
+        </div>
+    </div>
+</nav>
+
+<main class="main-content">
+
+    <div class="d-flex justify-content-between align-items-end mb-5">
+        <div>
+            <h6 class="text-uppercase text-primary fw-bold mb-1" style="letter-spacing: 1px;">Overview</h6>
+            <h2 class="fw-bold text-white m-0" style="font-family: 'Space Grotesk'">Admin Command Center</h2>
+        </div>
+
+        <div class="d-flex align-items-center gap-3">
+            <div class="px-3 py-2 rounded-pill border border-success border-opacity-25 bg-success bg-opacity-10 text-success small fw-bold">
+                <i class="bi bi-circle-fill me-2" style="font-size: 8px;"></i>System Operational
+            </div>
+            <div class="text-end text-secondary small">
+                Last updated:<br><span class="text-white fw-bold">Just Now</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+
+        <div class="col-md-3">
+            <div class="glass-card position-relative overflow-hidden">
+                <div class="position-absolute top-0 end-0 p-4 opacity-25 text-primary"><i class="bi bi-people" style="font-size: 4rem;"></i></div>
+
+                <div class="metric-title mb-2">Total Users</div>
+                <div class="metric-value">{{ total_users }}</div>
+                <div class="metric-sub d-flex gap-2">
+                    <span class="badge bg-white bg-opacity-10 fw-normal border border-secondary text-secondary">{{ donors }} Donors</span>
+                    <span class="badge bg-white bg-opacity-10 fw-normal border border-secondary text-secondary">{{ ngos }} NGOs</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="glass-card position-relative overflow-hidden">
+                <div class="position-absolute top-0 end-0 p-4 opacity-25 text-success"><i class="bi bi-check-circle" style="font-size: 4rem;"></i></div>
+
+                <div class="metric-title mb-2">Completed</div>
+                <div class="metric-value text-success">{{ completed }}</div>
+                <div class="metric-sub">
+                    Successfully delivered meals.
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="glass-card position-relative overflow-hidden">
+                <div class="position-absolute top-0 end-0 p-4 opacity-25 text-warning"><i class="bi bi-clock-history" style="font-size: 4rem;"></i></div>
+
+                <div class="metric-title mb-2">Pending Pickups</div>
+                <div class="metric-value text-warning">{{ pending_pickups }}</div>
+                <div class="metric-sub">
+                    Requires immediate action.
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="glass-card position-relative overflow-hidden">
+                <div class="position-absolute top-0 end-0 p-4 opacity-25 text-info"><i class="bi bi-box-seam" style="font-size: 4rem;"></i></div>
+
+                <div class="metric-title mb-2">Total Volume</div>
+                <div class="metric-value">{{ total_donations }}</div>
+                <div class="metric-sub">
+                    Total listed since inception.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+
+        <div class="col-lg-6">
+            <div class="glass-card d-flex flex-column justify-content-center">
+                <div class="d-flex align-items-start gap-3 mb-3">
+                    <div class="p-3 rounded-circle bg-primary bg-opacity-20 text-primary fs-4">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-white fw-bold mb-1">System Overview</h4>
+                        <p class="text-secondary small mb-0">
+                            The platform is operating at peak efficiency. User registrations have increased by 15% this week.
+                        </p>
+                    </div>
+                </div>
+                <hr class="border-secondary opacity-25 my-3">
+                <div class="row text-center">
+                    <div class="col-4 border-end border-secondary border-opacity-25">
+                        <div class="fw-bold text-white fs-5">98%</div>
+                        <div class="small text-secondary" style="font-size: 0.7rem;">UPTIME</div>
+                    </div>
+                    <div class="col-4 border-end border-secondary border-opacity-25">
+                        <div class="fw-bold text-white fs-5">0.2s</div>
+                        <div class="small text-secondary" style="font-size: 0.7rem;">LATENCY</div>
+                    </div>
+                    <div class="col-4">
+                        <div class="fw-bold text-white fs-5">Safe</div>
+                        <div class="small text-secondary" style="font-size: 0.7rem;">SECURITY</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="glass-card">
+                <h6 class="metric-title mb-4"><i class="bi bi-lightning-charge-fill text-warning me-2"></i>Quick Actions</h6>
+
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <a href="/admin/ngos" class="action-card">
+                            <div class="action-icon text-success bg-success bg-opacity-25"><i class="bi bi-magic"></i></div>
+                            <div>
+                                <div class="fw-bold text-white">Forecast</div>
+                                <div class="small text-secondary">AI Prediction</div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-sm-6">
+                        <a href="/admin/donations" class="action-card">
+                            <div class="action-icon"><i class="bi bi-search"></i></div>
+                            <div>
+                                <div class="fw-bold text-white">Donations</div>
+                                <div class="small text-secondary">Track live</div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-sm-6">
+                        <a href="/admin/reports" class="action-card">
+                            <div class="action-icon text-info bg-info bg-opacity-25"><i class="bi bi-file-earmark-bar-graph"></i></div>
+                            <div>
+                                <div class="fw-bold text-white">Reports</div>
+                                <div class="small text-secondary">Export data</div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-sm-6">
+                        <a href="/admin/users" class="action-card">
+                            <div class="action-icon text-warning bg-warning bg-opacity-25"><i class="bi bi-person-gear"></i></div>
+                            <div>
+                                <div class="fw-bold text-white">Manage Users</div>
+                                <div class="small text-secondary">Edit roles</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</main>
+
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Donation Details | FoodShare</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Poppins', sans-serif; background: #f4f6f9; }
+        .card {
+            border-radius: 18px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+        }
+        .label {
+            font-size: 0.8rem;
+            color: #777;
+        }
+        .value {
+            font-weight: 600;
+        }
+        .urgency {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container py-4">
+
+    <!-- HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold">
+            <i class="bi bi-info-circle me-2"></i>Donation Details
+        </h4>
+        <a href="/ngo/available-donations" class="btn btn-outline-secondary rounded-pill">
+            Back
+        </a>
+    </div>
+
+    <div class="row g-4">
+
+        <!-- LEFT: DETAILS -->
+        <div class="col-md-7">
+            <div class="card p-4">
+
+                <div class="d-flex justify-content-between mb-3">
+                    <h5 class="fw-bold">{{ donation[0] }}</h5>
+                    {% if donation[5] == 'Immediate' %}
+                        <span class="urgency bg-danger text-white">Immediate</span>
+                    {% elif donation[5] == 'High' %}
+                        <span class="urgency bg-warning text-dark">High</span>
+                    {% else %}
+                        <span class="urgency bg-success text-white">Normal</span>
+                    {% endif %}
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-4">
+                        <div class="label">Food Type</div>
+                        <div class="value">{{ donation[1] }} / {{ donation[2] }}</div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="label">Quantity</div>
+                        <div class="value">{{ donation[3] }} kg</div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="label">Servings</div>
+                        <div class="value">{{ donation[4] or '—' }}</div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <div class="label">Expiry Time</div>
+                    <div class="value">
+                        {{ donation[6] }}
+                    </div>
+                </div>
+
+                <hr>
+
+                <h6 class="fw-bold mb-2">Pickup Address</h6>
+                <p class="mb-2">
+                    {{ donation[7] }}<br>
+                    {{ donation[8] }}, {{ donation[9] }} - {{ donation[10] }}
+                </p>
+
+                <hr>
+
+                <h6 class="fw-bold mb-2">Contact Person</h6>
+                <p class="mb-1"><i class="bi bi-person"></i> {{ donation[11] }}</p>
+                <p class="mb-0"><i class="bi bi-telephone"></i> {{ donation[12] }}</p>
+
+                <hr>
+
+                <h6 class="fw-bold mb-2">Safety & Logistics</h6>
+                <p class="mb-1">Packaging: {{ donation[13] }}</p>
+                <p class="mb-1">Temperature: {{ donation[14] }}</p>
+                <p class="mb-1">Pickup Type: {{ donation[15] }}</p>
+                <p class="mb-0">Notes: {{ donation[16] or 'None' }}</p>
+
+                {% if donation[19] == 'Pending' %}
+                <div class="mt-4">
+                    <a href="/ngo/accept-donation/{{ donation_id }}"
+                       class="btn btn-success w-100"
+                       onclick="return confirm('Accept this donation?')">
+                        <i class="bi bi-check-circle me-1"></i>Accept Donation
+                    </a>
+                </div>
+                {% endif %}
+
+            </div>
+        </div>
+
+        <!-- RIGHT: MAP -->
+        <div class="col-md-5">
+            <div class="card p-3">
+                <h6 class="fw-bold mb-3">Pickup Location</h6>
+
+                {% if map_data %}
+<iframe
+    width="100%"
+    height="300"
+    style="border:0;border-radius:12px"
+    loading="lazy"
+    referrerpolicy="no-referrer-when-downgrade"
+    src="https://www.openstreetmap.org/export/embed.html
+         ?bbox={{ map_data.lng_min }},{{ map_data.lat_min }},
+                {{ map_data.lng_max }},{{ map_data.lat_max }}
+         &layer=mapnik
+         &marker={{ map_data.lat }},{{ map_data.lng }}">
+</iframe>
+{% else %}
+<p class="text-muted small">Map location not provided.</p>
+{% endif %}
+
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

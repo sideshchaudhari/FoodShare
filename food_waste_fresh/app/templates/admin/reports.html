@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FoodShare | Executive Analytics</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --sidebar-width: 260px;
+            --primary-glow: #6366f1;
+            --secondary-glow: #14b8a6;
+            --bg-dark: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: #cbd5e1;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* ANIMATED BACKGROUND */
+        .bg-animated {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: radial-gradient(circle at 0% 0%, rgba(99, 102, 241, 0.15), transparent 40%),
+                        radial-gradient(circle at 100% 100%, rgba(20, 184, 166, 0.15), transparent 40%);
+            z-index: -1;
+            animation: pulseBg 10s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulseBg {
+            0% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(1.1); opacity: 1; }
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            position: fixed;
+            top: 0; left: 0;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid var(--border-color);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+        }
+
+        .nav-link {
+            color: #94a3b8;
+            padding: 12px 16px;
+            border-radius: 10px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: rgba(99, 102, 241, 0.1);
+            color: #fff;
+        }
+
+        .nav-link.active {
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.2);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 30px;
+        }
+
+        /* GLASS CARDS */
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 24px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        /* KPI STYLING */
+        .kpi-title {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #94a3b8;
+            font-weight: 600;
+        }
+
+        .kpi-number {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: white;
+            line-height: 1.2;
+        }
+
+        .trend-badge {
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .trend-up { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+        .trend-down { background: rgba(244, 63, 94, 0.15); color: #fb7185; }
+
+        /* TABLE */
+        .table-dark-glass {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 8px;
+        }
+
+        .table-dark-glass th {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #64748b;
+            padding: 0 15px 10px;
+            border: none;
+        }
+
+        .table-dark-glass td {
+            background: rgba(255,255,255,0.03);
+            padding: 16px;
+            vertical-align: middle;
+            border: none;
+            transition: 0.2s;
+        }
+
+        .table-dark-glass tr:hover td {
+            background: rgba(255,255,255,0.06);
+        }
+
+        .table-dark-glass td:first-child { border-radius: 10px 0 0 10px; }
+        .table-dark-glass td:last-child { border-radius: 0 10px 10px 0; }
+
+        /* AVATAR */
+        .avatar {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #6366f1, #8b5cf6);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; color: white;
+            box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+        }
+
+        /* PRINT STYLES */
+        @media print {
+            .sidebar, .bg-animated, .btn, .no-print { display: none !important; }
+            .main-content { margin-left: 0; padding: 0; }
+            body { background: white; color: black; }
+            .glass-card { border: 1px solid #ddd; box-shadow: none; background: white; color: black; }
+            .kpi-number { color: black; }
+            td { background: white !important; border-bottom: 1px solid #ddd !important; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="bg-animated"></div>
+
+<nav class="sidebar">
+    <div class="mb-5 px-2 d-flex align-items-center gap-2">
+        <div class="avatar" style="width:32px; height:32px; font-size: 0.8rem;"><i class="bi bi-recycle"></i></div>
+        <span class="fs-5 fw-bold text-white" style="font-family: 'Space Grotesk'">FoodShare</span>
+    </div>
+
+    <div class="d-flex flex-column gap-2 flex-grow-1">
+        <a href="/admin/dashboard" class="nav-link">
+            <i class="bi bi-speedometer2"></i> Dashboard
+        </a>
+        <a href="/admin/users" class="nav-link">
+            <i class="bi bi-people"></i> User Management
+        </a>
+        <a href="/admin/donations" class="nav-link">
+            <i class="bi bi-box-seam"></i> Donations
+        </a>
+        <a href="/admin/prediction" class="nav-link"><i class="bi bi-magic"></i> AI Forecast</a>
+        <a href="/admin/reports" class="nav-link active">
+            <i class="bi bi-bar-chart-line"></i> Reports & Analytics
+        </a>
+    </div>
+
+    <div class="mt-auto pt-4 border-top border-white border-opacity-10">
+        <div class="d-flex align-items-center gap-3 px-2">
+            <div class="avatar">AD</div>
+            <div style="line-height: 1.2;">
+                <div class="small fw-bold text-white">Admin User</div>
+                <div style="font-size: 0.75rem; color: #94a3b8;">admin@foodshare.org</div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<main class="main-content">
+
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <h2 class="fw-bold text-white mb-1" style="font-family: 'Space Grotesk'">System Analytics</h2>
+            <p class="text-secondary mb-0">Overview of platform performance and impact.</p>
+        </div>
+        <div class="d-flex gap-3">
+            <button class="btn btn-outline-light rounded-pill px-3" onclick="window.print()">
+                <i class="bi bi-printer me-2"></i> Print Report
+            </button>
+
+        </div>
+    </div>
+
+    <div class="glass-card mb-4 py-3 px-4 d-flex align-items-center gap-4 flex-wrap">
+        <span class="text-secondary fw-bold small text-uppercase"><i class="bi bi-funnel-fill me-2"></i>Filters</span>
+        <form method="GET" class="d-flex gap-3 flex-grow-1 align-items-center">
+            <input type="date" name="start_date" value="{{ start_date }}" class="form-control bg-transparent text-white border-secondary" style="max-width: 160px;">
+            <span class="text-secondary">to</span>
+            <input type="date" name="end_date" value="{{ end_date }}" class="form-control bg-transparent text-white border-secondary" style="max-width: 160px;">
+            <button class="btn btn-sm btn-outline-light rounded-circle" style="width: 32px; height: 32px;"><i class="bi bi-arrow-right"></i></button>
+        </form>
+
+    </div>
+
+    <div class="row g-4 mb-5">
+        <div class="col-md-3">
+            <div class="glass-card h-100 position-relative overflow-hidden">
+                <div class="position-absolute top-0 end-0 p-4 opacity-25 text-primary"><i class="bi bi-box-seam" style="font-size: 4rem; transform: rotate(15deg);"></i></div>
+
+                <div class="kpi-title mb-2">Total Donations</div>
+                <div class="kpi-number mb-2">{{ total }}</div>
+                <div class="trend-badge trend-up">
+                    <i class="bi bi-arrow-up-right"></i> 12.5% vs last month
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="glass-card h-100 position-relative overflow-hidden">
+                <div class="position-absolute top-0 end-0 p-4 opacity-25 text-success"><i class="bi bi-check-circle" style="font-size: 4rem;"></i></div>
+
+                <div class="kpi-title mb-2">Completed</div>
+                <div class="kpi-number mb-2">{{ completed }}</div>
+                <div class="trend-badge trend-up">
+                    <i class="bi bi-arrow-up-right"></i> 8.2% vs last month
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="glass-card h-100 position-relative overflow-hidden">
+                <div class="position-absolute top-0 end-0 p-4 opacity-25 text-warning"><i class="bi bi-clock-history" style="font-size: 4rem;"></i></div>
+
+                <div class="kpi-title mb-2">Pending Actions</div>
+                <div class="kpi-number mb-2">{{ pending }}</div>
+                <div class="trend-badge trend-down">
+                    <i class="bi bi-arrow-down-right"></i> -2% (Good)
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="glass-card h-100 position-relative overflow-hidden">
+                <div class="position-absolute top-0 end-0 p-4 opacity-25 text-info"><i class="bi bi-pie-chart" style="font-size: 4rem;"></i></div>
+
+                <div class="kpi-title mb-2">Avg Quantity</div>
+                <div class="kpi-number mb-2">{{ avg_qty }} <span class="fs-6 text-secondary fw-normal">kg</span></div>
+                <div class="progress mt-2 bg-secondary bg-opacity-25" style="height: 4px;">
+                    <div class="progress-bar bg-info" style="width: 75%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-5">
+        <div class="col-lg-8">
+            <div class="glass-card h-100">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="fw-bold text-white m-0">Donation Volume Trend</h5>
+
+                </div>
+                <div style="height: 300px; width: 100%;">
+                    <canvas id="trendChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="glass-card h-100">
+                <h5 class="fw-bold text-white mb-4">Status Distribution</h5>
+                <div style="height: 250px; position: relative;">
+                    <canvas id="statusChart"></canvas>
+                    <div class="position-absolute top-50 start-50 translate-middle text-center pointer-events-none">
+                        <div class="small text-secondary">Total</div>
+                        <div class="fw-bold text-white fs-4">{{ total }}</div>
+                    </div>
+                </div>
+                <div class="mt-4 d-flex justify-content-center gap-3">
+                    <div class="d-flex align-items-center gap-2 small text-secondary">
+                        <span class="rounded-circle" style="width:10px; height:10px; background:#10b981;"></span> Completed
+                    </div>
+                    <div class="d-flex align-items-center gap-2 small text-secondary">
+                        <span class="rounded-circle" style="width:10px; height:10px; background:#f59e0b;"></span> Pending
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <div class="glass-card h-100">
+                <h5 class="fw-bold text-white mb-4">👑 Top Impact Makers</h5>
+                <div class="table-responsive">
+                    <table class="table-dark-glass">
+                        <thead>
+                            <tr>
+                                <th>Donor Organization</th>
+                                <th>Count</th>
+                                <th class="text-end">Volume Saved</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for d in top_donors %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="avatar" style="width: 32px; height: 32px; font-size: 0.7rem; background: #334155;">{{ d[0][:2].upper() }}</div>
+                                        <span class="fw-bold text-white">{{ d[0] }}</span>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-dark border border-secondary text-secondary">{{ d[1] }}</span></td>
+                                <td class="text-end fw-bold text-success">{{ d[2] }} kg</td>
+                            </tr>
+                            {% else %}
+                            <tr><td colspan="3" class="text-center text-muted">No data</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="glass-card h-100">
+                <div class="d-flex justify-content-between mb-4">
+                    <h5 class="fw-bold text-white">Live Feed</h5>
+                    <a href="/admin/donations" class="text-primary small text-decoration-none fw-bold">View All <i class="bi bi-arrow-right"></i></a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table-dark-glass">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Status</th>
+                                <th class="text-end">Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for r in recent %}
+                            <tr>
+                                <td>
+                                    <div class="text-white fw-bold">{{ r[0] }}</div>
+                                    <div class="small text-secondary">{{ r[1] }} kg • Pickup required</div>
+                                </td>
+                                <td>
+                                    <span class="badge rounded-pill status-pill" data-status="{{ r[2] }}">{{ r[2] }}</span>
+                                </td>
+                                <td class="text-end text-secondary small">{{ r[3] }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<script>
+    // JS Logic for Charts and Interactivity
+
+    // 1. Colorizing Status Pills dynamically
+    document.querySelectorAll('.status-pill').forEach(pill => {
+        const status = pill.getAttribute('data-status').toLowerCase();
+        pill.className = 'badge rounded-pill px-3 py-2 '; // Reset
+
+        if(status.includes('completed')) {
+            pill.classList.add('bg-success', 'bg-opacity-25', 'text-success');
+        } else if (status.includes('pending')) {
+            pill.classList.add('bg-warning', 'bg-opacity-25', 'text-warning');
+        } else {
+            pill.classList.add('bg-secondary', 'bg-opacity-25', 'text-light');
+        }
+    });
+
+    // 2. Beautiful Charts Configuration
+    Chart.defaults.color = '#64748b';
+    Chart.defaults.font.family = "'Inter', sans-serif";
+
+    // Line Chart
+    const ctx = document.getElementById('trendChart').getContext('2d');
+    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+    gradient.addColorStop(0, 'rgba(99, 102, 241, 0.5)');
+    gradient.addColorStop(1, 'rgba(99, 102, 241, 0.0)');
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: {{ daily_labels | tojson }},
+            datasets: [{
+                label: 'Donations',
+                data: {{ daily_counts | tojson }},
+                borderColor: '#6366f1',
+                backgroundColor: gradient,
+                borderWidth: 3,
+                tension: 0.4, // Smooth curves
+                fill: true,
+                pointBackgroundColor: '#0f172a',
+                pointBorderWidth: 2,
+                pointRadius: 4,
+                pointHoverRadius: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { grid: { color: 'rgba(255,255,255,0.05)' }, border: { display: false } },
+                x: { grid: { display: false }, border: { display: false } }
+            }
+        }
+    });
+
+    // Doughnut Chart
+    new Chart(document.getElementById('statusChart'), {
+        type: 'doughnut',
+        data: {
+            labels: {{ status_labels | tojson }},
+            datasets: [{
+                data: {{ status_counts | tojson }},
+                backgroundColor: ['#10b981', '#f59e0b', '#ef4444', '#3b82f6'],
+                borderWidth: 0,
+                hoverOffset: 10
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '80%', // Thinner ring
+            plugins: { legend: { display: false } }
+        }
+    });
+</script>
+
+</body>
+</html>

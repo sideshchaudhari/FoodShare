@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Donation | FoodShare</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body { background: #f4f6f9; }
+        .card {
+            border-radius: 18px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold">Edit Donation</h4>
+        <a href="/donor/my-donations" class="btn btn-outline-secondary rounded-pill">
+            Back
+        </a>
+    </div>
+
+    <form method="POST" class="card p-4">
+
+        <div class="mb-3">
+            <label>Food Title</label>
+            <input type="text" name="food_title" class="form-control"
+                   value="{{ donation[2] }}" required>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-md-6">
+                <label>Quantity (kg)</label>
+                <input type="number" step="0.1" name="quantity_kg"
+                       class="form-control" value="{{ donation[5] }}" required>
+            </div>
+            <div class="col-md-6">
+                <label>Expiry Time</label>
+                <input type="datetime-local" name="expiry_time"
+                       class="form-control"
+                       value="{{ donation[9] }}" required>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label>Pickup Address</label>
+            <textarea name="pickup_address" class="form-control"
+                      rows="3" required>{{ donation[10] }}</textarea>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-md-4">
+                <input type="text" name="city" class="form-control"
+                       value="{{ donation[11] }}" required>
+            </div>
+            <div class="col-md-4">
+                <input type="text" name="state" class="form-control"
+                       value="{{ donation[12] }}" required>
+            </div>
+            <div class="col-md-4">
+                <input type="text" name="pincode" class="form-control"
+                       value="{{ donation[13] }}" required>
+            </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-md-6">
+                <input type="text" name="contact_name" class="form-control"
+                       value="{{ donation[14] }}" required>
+            </div>
+            <div class="col-md-6">
+                <input type="text" name="contact_phone" class="form-control"
+                       value="{{ donation[15] }}" required>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label>Special Instructions</label>
+            <textarea name="special_instructions"
+                      class="form-control" rows="3">{{ donation[16] }}</textarea>
+        </div>
+
+        <div class="text-end">
+            <button class="btn btn-success">Save Changes</button>
+        </div>
+
+    </form>
+
+</div>
+
+</body>
+</html>
